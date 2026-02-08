@@ -1,5 +1,5 @@
 @IsTest
-private class NewsAPIServiceTest {
+public class NewsAPIServiceTest {
     
     @IsTest
     static void testGetTopHeadlinesByCategorySuccess() {
@@ -9,7 +9,7 @@ private class NewsAPIServiceTest {
         Test.startTest();
         
         // Test with valid parameters
-        NewsAPIResponse response = NewsAPIService.getTopHeadlinesByCategory('technology', 1);
+        NewsAPIResponse response = NewsAPIService.getTopHeadlinesByCategory(null, 'technology', null, 1);
         
         Test.stopTest();
         
@@ -27,7 +27,7 @@ private class NewsAPIServiceTest {
         Test.startTest();
         
         // Test with invalid page (should use default of 1)
-        NewsAPIResponse response = NewsAPIService.getTopHeadlinesByCategory('technology', 0);
+        NewsAPIResponse response = NewsAPIService.getTopHeadlinesByCategory(null, 'technology', null, 0);
         
         Test.stopTest();
         

@@ -1,47 +1,45 @@
-/**
- * Wrapper class for parsing the NewsAPI response
- */
 public class NewsAPIResponse {
-    // TODO: Define fields to match the NewsAPI response structure
     public String status { get; set; }
     public Integer totalResults { get; set; }
     public List<Article> articles { get; set; }
+    public String code { get; set; }
+    public String message { get; set; }
+    public static final Integer DESCRIPTION_MAX_LENGTH = 32767;
+    public static final Integer TITLE_MAX_LENGTH = 254;
+    public static final Integer CONTENT_MAX_LENGTH = 131071;
     
-    /**
-     * Inner class representing a news article
-     */
     public class Article {
-        // TODO: Define article fields
-        // Example fields:
-        // public String title { get; set; }
-        // public String description { get; set; }
-        // public String url { get; set; }
-        // etc.
+        public Source source { get; set; }
+        public String author { get; set; }
+        public String title { get; set; }
+        public String description { get; set; }
+        public String url { get; set; }
+        public String urlToImage { get; set; }
+        public String publishedAt { get; set; }
+        public String content { get; set; }
     }
     
-    /**
-     * Inner class representing a news source
-     */
     public class Source {
-        // TODO: Define source fields
-        // Example fields:
-        // public String id { get; set; }
-        // public String name { get; set; }
+        public String id { get; set; }
+        public String name { get; set; }
     }
     
-    /**
-     * Static method to convert an API article to a Salesforce Article__c record
-     * @param apiArticle The API article to convert
-     * @return Article__c The Salesforce record
-     */
-    public static Article__c convertToSObject(Article apiArticle) {
-        // TODO: Implement conversion from API article to Salesforce record
-        // Consider:
-        // - Generating a unique record name
-        // - Setting article fields from the API response
-        // - Handling content length limits if needed
-        // - Handling date conversion
+    public static Article__c convertToSObject(Article apiArticle, News_Category__c newsCategory) {
         
-        return null;
+        Article__c article = new Article__c();
+        article.News_Category__c = newsCategory.Id;
+        article.Category__c = newsCategory.Name;
+        article.Author__c = apiArticle.author;
+        DateTime publishedDateTime = (DateTime)JSON.deserialize('"' + apiArticle.publishedAt + '"', DateTime.class);
+        article.Published_At__c = publishedDateTime;
+        article.Name = article.Author__c + ' - ' + article.Published_At__c;
+        article.Description__c = UtilityString.getSubStringIfMaxCharsExceeded(apiArticle.description, DESCRIPTION_MAX_LENGTH);
+        article.Source__c = apiArticle.source.name;
+        article.Title__c = UtilityString.getSubStringIfMaxCharsExceeded(apiArticle.title, TITLE_MAX_LENGTH);
+        article.url__c = apiArticle.url;
+        article.Content__c = UtilityString.getSubStringIfMaxCharsExceeded(apiArticle.content, CONTENT_MAX_LENGTH);
+        article.urlToImage__c = apiArticle.urlToImage;
+        
+        return article;
     }
 } 
